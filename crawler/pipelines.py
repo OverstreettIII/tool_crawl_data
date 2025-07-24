@@ -42,6 +42,7 @@ class DatabasePipeline:
                     website=item.get("website"),
                     email=item.get("email"),
                     category=item.get("category", ""),
+                    update_info=item.get("update_info", ""),  # Thêm trường update_info
                 )
                 business.save()
                 return business.name

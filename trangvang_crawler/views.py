@@ -1,7 +1,7 @@
 import pandas as pd
 import io
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import CrawlTask
 import subprocess
@@ -39,7 +39,7 @@ def export_task_to_excel(request, task_id):
     # 2. Lấy tất cả dữ liệu doanh nghiệp liên quan đến task này
     # Dùng .values() để tăng hiệu suất và lấy dữ liệu dưới dạng dictionary
     businesses_data = task.businesses.all().values(
-        'name', 'phone', 'address', 'category', 'website'
+        'name', 'phone', 'address', 'category', 'website', 'email', 'update_info'  # Thêm cột update_info
     )
 
     if not businesses_data:
@@ -54,7 +54,9 @@ def export_task_to_excel(request, task_id):
         'phone': 'Số Điện Thoại',
         'address': 'Địa Chỉ',
         'category': 'Ngành Nghề',
-        'website': 'Website'
+        'website': 'Website',
+        'email': 'Email',
+        'update_info': 'Thông Tin Cập Nhật'  # Đổi tên cột update_info
     }, inplace=True)
 
     # 4. Tạo một buffer trong bộ nhớ để lưu file Excel
@@ -75,4 +77,7 @@ def export_task_to_excel(request, task_id):
     # Thiết lập header để trình duyệt hiểu đây là một file cần tải xuống
     response['Content-Disposition'] = f'attachment; filename="task_{task.id}_data.xlsx"'
 
-    return response 
+    return response
+
+def home(request):
+    return render(request, 'home.html')

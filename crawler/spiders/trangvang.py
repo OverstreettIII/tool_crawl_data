@@ -111,6 +111,15 @@ class TrangVangSpider(scrapy.Spider):
                 category_text = business.css('div.listing_diachi_nologo div:nth-child(1) span.nganh_listing_txt::text').get()
             category = category_text.strip() if category_text else None
             
+            # Trích xuất thông tin cập nhật
+            update_info_element = business.css('div.p-1.ps-0.star_mb small')
+            if update_info_element:
+                update_info = update_info_element.xpath('string(.)').get().strip()
+                self.logger.info(f"Thông tin cập nhật: {update_info}")  # Thêm log để kiểm tra giá trị
+            else:
+                update_info = None
+
+            # Lưu thông tin cập nhật vào item
             item = {
                 'task_id': self.task_id,
                 'name': name,
@@ -119,6 +128,7 @@ class TrangVangSpider(scrapy.Spider):
                 'website': website_url,
                 'email': email,
                 'category': category,
+                'update_info': update_info,  # Thêm trường update_info
             }
             
             # In ra console để kiểm tra
@@ -142,8 +152,13 @@ class TrangVangSpider(scrapy.Spider):
         current_page_element = response.css('a.page_active::text').get()
         current_page = int(current_page_element) if current_page_element and current_page_element.isdigit() else 1
 
+        # Kiểm tra nếu thông tin đã lâu không được cập nhật
+        if update_info and "Thông tin đã lâu không được cập nhật" in update_info:
+            print("--- Dữ liệu đã lâu không được cập nhật. Dừng crawl. ---")
+            return
+
+        # Tiếp tục crawl trang tiếp theo nếu không có dữ liệu cũ
         if next_page and max_page and current_page < max_page:
-            # Nối URL tương đối với domain để có URL tuyệt đối
             base_url = response.url.split('?')[0]
             next_page_url = urljoin(base_url, next_page)
             print(f"--- Đang chuyển tới trang kế tiếp: {next_page_url} ---")

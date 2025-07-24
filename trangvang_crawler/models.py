@@ -24,8 +24,7 @@ class BusinessData(models.Model):
     category = models.CharField(max_length=255, null=True, blank=True, verbose_name="Ngành nghề")
     website = models.URLField(max_length=500, null=True, blank=True)
     email = models.EmailField(null=True, blank=True)
-    # Thêm các trường khác nếu cần, ví dụ:
-    # source_url = models.URLField(max_length=1024, verbose_name="URL trang chi tiết")
+    update_info = models.CharField(max_length=255, null=True, blank=True, verbose_name="Thông tin cập nhật")
 
     def __str__(self):
         return self.name

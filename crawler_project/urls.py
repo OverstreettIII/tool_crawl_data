@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from trangvang_crawler import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # dòng này để kết nối các URL từ app trangvang_crawler
     path('crawler/', include('trangvang_crawler.urls')),
+    path('', views.home, name='home'),
 ]
